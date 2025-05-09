@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notenrechner</title>
+  <style>
+    :root {
+      --max-width: 800px;
+      --primary-color: #6f42c1;
+      --background-color: #f3f4f6;
+      --surface-color: #ffffff;
+      --error-color: #dc3545;
+      --font-family: 'Arial', sans-serif;
+      --font-size-base: 18px;
+      --font-size-lg: 2rem;
+      --font-size-md: 1.25rem;
+      --font-size-sm: 0.9rem;
+      --gap: 1.5rem;
+      --radius: 0.5rem;
+      --transition: 0.3s ease;
+      --shadow: 0 4px 12px rgba(0,0,0,0.05);
+      --control-width: 280px;
+    }
+
+    html { font-size: var(--font-size-base); }
+    body {
+      font-family: var(--font-family);
+      background: var(--background-color);
+      color: #333;
+      margin: 0;
+      padding: var(--gap);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .container {
+      width: 100%;
+      max-width: var(--max-width);
+    }
+    h1 {
+      font-size: var(--font-size-lg);
+      color: var(--primary-color);
+      margin-bottom: var(--gap);
+    }
+    h2 {
+      font-size: var(--font-size-md);
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+    }
+    .explanation {
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--gap);
+    }
+
+    .calc-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: var(--gap);
+    }
+    .calc-box {
+      background: var(--surface-color);
+      padding: var(--gap);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Zentriert alle Controls */
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: bold;
+      font-size: var(--font-size-sm);
+      align-self: flex-start;
+    }
+    input,
+    button {
+      width: 100%;
+      max-width: var(--control-width); /* Einheitliche Breite */
+      font-size: var(--font-size-base);
+      padding: 0.75rem;
+      border-radius: var(--radius);
+      border: 1px solid #ccc;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      margin-bottom: 1rem;
+      box-sizing: border-box;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(111,66,193,0.2);
+    }
+    input:invalid:not(:placeholder-shown) {
+      border-color: var(--error-color);
+    }
+    button {
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background-color var(--transition);
+      margin-bottom: 0; /* bereits in Controls */
+    }
+    button:disabled {
+      background-color: #adb5bd;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
+      filter: brightness(0.9);
+    }
+
+    .ergebnis {
+      margin-top: var(--gap);
+      font-weight: bold;
+      min-height: 2em;
+      text-align: center;
+    }
+    .error {
+      color: var(--error-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+    }
+    th, td {
+      padding: 0.5rem;
+      text-align: center;
+      border: 1px solid #e1e1e1;
+    }
+    th {
+      background-color: #e9ecef;
+    }
+    tbody tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    tbody tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 1rem; }
+      .calc-box {
+        padding: 1rem;
+      }
+      /* Steuerbreite auf 100% im Mobile */
+      input,
+      button {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Notenrechner</h1>
+    <p class="explanation">Wähle unten, ob du mit oder ohne Abschlussnote rechnen möchtest. Deine Daten werden nicht gspeichert.</p>
+
+    <div class="calc-container">
+      <!-- Box 1: Standardverfahren -->
+      <section class="calc-box">
+        <h2>Berechnung mit Abschlussarbeit</h2>
+        <p class="explanation">Berechne deinen genauen und gerundeten Durchschnitt aus Vornote und Abschlussarbeit.</p>
+        <form id="notenForm" novalidate>
+          <label for="vornote">Vornote (aktueller Durchschnitt)</label>
+          <input type="number" id="vornote" inputmode="decimal" step="0.01" min="1" max="6" placeholder="z.B. 2,85" required>
+
+          <label for="abschluss">Note Abschlussarbeit (ganzzahlig)</label>
+          <input type="number" id="abschluss" min="1" max="6" step="1" placeholder="z.B. 4" required>
+
+          <button type="submit" id="berechnenBtn" disabled>Berechnen</button>
+        </form>
+        <div class="ergebnis" aria-live="polite" id="ergebnis"></div>
+        <div class="ergebnis" aria-live="polite" id="required45"></div>
+      </section>
+
+      <!-- Box 2: Alternatives Verfahren -->
+      <section class="calc-box">
+        <h2>Nur Vornote</h2>
+        <p class="explanation">Sieh, welche Note du in der Abschlussarbeit brauchst, um eine bestimmte Zeugnisnote zu erreichen.</p>
+        <form id="altForm" novalidate>
+          <label for="altVornote">Vornote (aktueller Durchschnitt)</label>
+          <input type="number" id="altVornote" inputmode="decimal" step="0.01" min="1" max="6" placeholder="z.B. 2,85" required>
+          <button type="submit" id="altBerechnenBtn" disabled>Optionen berechnen</button>
+        </form>
+        <div class="ergebnis" aria-live="polite" id="altErgebnis"></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      const form = document.getElementById('notenForm');
+      const vInput = document.getElementById('vornote');
+      const aInput = document.getElementById('abschluss');
+      const berechnenBtn = document.getElementById('berechnenBtn');
+      const ergebnisDiv = document.getElementById('ergebnis');
+      const reqDiv = document.getElementById('required45');
+
+      const altForm = document.getElementById('altForm');
+      const altVInput = document.getElementById('altVornote');
+      const altBtn = document.getElementById('altBerechnenBtn');
+      const altDiv = document.getElementById('altErgebnis');
+
+      const validateStandard = () => { berechnenBtn.disabled = !form.checkValidity(); };
+      [vInput, aInput].forEach(el => el.addEventListener('input', validateStandard));
+
+      const validateAlternative = () => { altBtn.disabled = !altForm.checkValidity(); };
+      altVInput.addEventListener('input', validateAlternative);
+
+      const calcNeededRange = (v, target) => {
+        const minScore = 3 * (target - 0.5) - 2 * v;
+        const maxScore = 3 * (target + 0.5) - 2 * v;
+        let minGrade = Math.ceil(minScore);
+        let maxGrade = Math.ceil(maxScore) - 1;
+        if (minGrade < 1) minGrade = 1;
+        if (maxGrade > 6) maxGrade = 6;
+        return minGrade > maxGrade ? null : [minGrade, maxGrade];
+      };
+
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        ergebnisDiv.textContent = '';
+        reqDiv.textContent = '';
+        const v = parseFloat(vInput.value.replace(',', '.'));
+        const a = parseInt(aInput.value, 10);
+        if (isNaN(v) || v < 1 || v > 6 || isNaN(a) || a < 1 || a > 6) {
+          ergebnisDiv.innerHTML = '<span class="error">Bitte gültige Noten zwischen 1 und 6 eingeben.</span>';
+          return;
+        }
+        const avg = (2 * v + a) / 3;
+        const avgStr = avg.toFixed(3).replace('.', ',');
+        const avgRound = Math.round(avg);
+        ergebnisDiv.innerHTML = `
+          <p>Genauer Durchschnitt: <strong>${avgStr}</strong></p>
+          <p>Gerundete Zeugnisnote: <strong>${avgRound}</strong></p>
+        `;
+        const neededRaw = Math.ceil(13.5 - 2 * v);
+        let neededText = neededRaw > 6 ? 'Nicht erreichbar (Note > 6 nötig)' : neededRaw < 1 ? 'Selbst mit einer 1 nicht möglich' : neededRaw;
+        reqDiv.innerHTML = `<p>Für Zeugnisnote 5: <strong>${neededText}</strong></p>`;
+      });
+
+      altForm.addEventListener('submit', e => {
+        e.preventDefault();
+        altDiv.textContent = '';
+        const v = parseFloat(altVInput.value.replace(',', '.'));
+        if (isNaN(v) || v < 1 || v > 6) {
+          altDiv.innerHTML = '<span class="error">Bitte gültige Vornote zwischen 1 und 6 eingeben.</span>';
+          return;
+        }
+        const targets = [1, 2, 3, 4, 5, 6];
+        let html = '<table><thead><tr><th>Zielnote</th><th>Erforderliche Abschlussarbeitsnote</th></tr></thead><tbody>';
+        targets.forEach(t => {
+          const range = calcNeededRange(v, t);
+          let noteText = 'nicht möglich';
+          if (range) {
+            const [min, max] = range;
+            noteText = min === max ? String(min) : `${min}–${max}`;
+          }
+          html += `<tr><td>${t}</td><td>${noteText}</td></tr>`;
+        });
+        html += '</tbody></table>';
+        altDiv.innerHTML = html;
+        validateAlternative();
+      });
+
+      validateStandard(); validateAlternative();
+    })();
+  </script>
+</body>
+</html>
