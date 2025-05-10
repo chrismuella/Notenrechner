@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,16 +15,19 @@
       --font-family: 'Arial', sans-serif;
       --font-size-base: 18px;
       --font-size-lg: 2rem;
-      --font-size-md: 1.25rem;
+      --font-size-md: 1.15rem;
       --font-size-sm: 0.9rem;
       --gap: 1.5rem;
       --radius: 0.5rem;
       --transition: 0.3s ease;
-      --shadow: 0 4px 12px rgba(0,0,0,0.05);
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
       --control-width: 280px;
     }
 
-    html { font-size: var(--font-size-base); }
+    html {
+      font-size: var(--font-size-base);
+    }
+
     body {
       font-family: var(--font-family);
       background: var(--background-color);
@@ -34,23 +38,28 @@
       justify-content: center;
       align-items: flex-start;
     }
+
     .container {
       width: 100%;
       max-width: var(--max-width);
     }
+
     h1 {
       font-size: var(--font-size-lg);
       color: var(--primary-color);
-      margin-bottom: var(--gap);
+      margin-bottom: 0.5rem
     }
+
     h2 {
       font-size: var(--font-size-md);
       color: var(--primary-color);
-      margin-bottom: 0.5rem;
+      margin-top: 0.3rem;
     }
+
     .explanation {
       font-size: var(--font-size-sm);
       margin-bottom: var(--gap);
+      line-height: 1.5;
     }
 
     .calc-container {
@@ -58,6 +67,7 @@
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: var(--gap);
     }
+
     .calc-box {
       background: var(--surface-color);
       padding: var(--gap);
@@ -65,8 +75,17 @@
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      align-items: center; /* Zentriert alle Controls */
+      align-items: center;
+      /* Zentriert alle Controls */
     }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: var(--control-width);
+    }
+
 
     label {
       display: block;
@@ -75,10 +94,12 @@
       font-size: var(--font-size-sm);
       align-self: flex-start;
     }
+
     input,
     button {
       width: 100%;
-      max-width: var(--control-width); /* Einheitliche Breite */
+      max-width: var(--control-width);
+      /* Einheitliche Breite */
       font-size: var(--font-size-base);
       padding: 0.75rem;
       border-radius: var(--radius);
@@ -87,26 +108,32 @@
       margin-bottom: 1rem;
       box-sizing: border-box;
     }
+
     input:focus {
       outline: none;
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(111,66,193,0.2);
+      box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.2);
     }
+
     input:invalid:not(:placeholder-shown) {
       border-color: var(--error-color);
     }
+
     button {
       background-color: var(--primary-color);
       color: #fff;
       border: none;
       cursor: pointer;
       transition: background-color var(--transition);
-      margin-bottom: 0; /* bereits in Controls */
+      margin-bottom: 0;
+      /* bereits in Controls */
     }
+
     button:disabled {
       background-color: #adb5bd;
       cursor: not-allowed;
     }
+
     button:hover:not(:disabled) {
       filter: brightness(0.9);
     }
@@ -117,6 +144,7 @@
       min-height: 2em;
       text-align: center;
     }
+
     .error {
       color: var(--error-color);
     }
@@ -126,26 +154,49 @@
       border-collapse: collapse;
       margin-top: 0.5rem;
     }
-    th, td {
+
+    th,
+    td {
       padding: 0.5rem;
       text-align: center;
       border: 1px solid #e1e1e1;
     }
+
     th {
       background-color: #e9ecef;
     }
+
     tbody tr:nth-child(even) {
       background-color: #f8f9fa;
     }
+
     tbody tr:hover {
       background-color: #f1f1f1;
     }
 
+    .footer {
+      display: flex;
+      justify-content: center;
+      margin-top: var(--gap);
+      text-align: center;
+    }
+
+    img {
+      width: 40px;
+      height: 40px;
+      margin: 0.5rem;
+      opacity: 0.5;
+    }
+
     @media (max-width: 600px) {
-      body { padding: 1rem; }
+      body {
+        padding: 1rem;
+      }
+
       .calc-box {
         padding: 1rem;
       }
+
       /* Steuerbreite auf 100% im Mobile */
       input,
       button {
@@ -154,22 +205,26 @@
     }
   </style>
 </head>
+
 <body>
   <main class="container">
     <h1>Notenrechner</h1>
     <p class="explanation">Wähle unten, ob du mit oder ohne Abschlussnote rechnen möchtest. <br>
-      Deine Daten werden nicht gespeichert. Die Formeln zur Berechnung wurden sehr genau geprüft. Aber niemand ist perfekt. Ich gebe keine Garantie für die Korrektheit der Ergebnisse!</p>
-    
+      Deine Daten werden nicht gespeichert. Die Formeln zur Berechnung wurden sehr genau geprüft. Aber niemand ist
+      perfekt. Ich gebe keine Garantie für die Korrektheit der Ergebnisse!</p>
+
     <div class="calc-container">
       <!-- Box 1: Standardverfahren -->
       <section class="calc-box">
         <h2>Berechnung mit Abschlussarbeit</h2>
         <p class="explanation">Berechne deinen genauen und gerundeten Durchschnitt aus Vornote und Abschlussarbeit.</p>
-        <form id="notenForm" novalidate>
-          <label for="vornote">Vornote (aktueller Durchschnitt)</label>
-          <input type="number" id="vornote" inputmode="decimal" step="0.01" min="1" max="6" placeholder="z.B. 2,85" required>
 
-          <label for="abschluss">Note Abschlussarbeit (ganzzahlig)</label>
+        <form class="form" id="notenForm" novalidate>
+          <label for="vornote">Vornote</label>
+          <input type="number" id="vornote" inputmode="decimal" step="0.01" min="1" max="6" placeholder="z.B. 2,85"
+            required>
+
+          <label for="abschluss">Note Abschlussarbeit</label>
           <input type="number" id="abschluss" min="1" max="6" step="1" placeholder="z.B. 4" required>
 
           <button type="submit" id="berechnenBtn" disabled>Berechnen</button>
@@ -181,18 +236,20 @@
       <!-- Box 2: Alternatives Verfahren -->
       <section class="calc-box">
         <h2>Nur Vornote</h2>
-        <p class="explanation">Sieh, welche Note du in der Abschlussarbeit brauchst, um eine bestimmte Zeugnisnote zu erreichen.</p>
-        <form id="altForm" novalidate>
-          <label for="altVornote">Vornote (aktueller Durchschnitt)</label>
-          <input type="number" id="altVornote" inputmode="decimal" step="0.01" min="1" max="6" placeholder="z.B. 2,85" required>
+        <p class="explanation">Sieh, welche Note du in der Abschlussarbeit brauchst, um eine bestimmte Zeugnisnote zu
+          erreichen.</p>
+        <form class="form" id="altForm" novalidate>
+          <label for="altVornote">Vornote</label>
+          <input type="number" id="altVornote" inputmode="decimal" step="0.01" min="1" max="6" placeholder="z.B. 2,85"
+            required>
           <button type="submit" id="altBerechnenBtn" disabled>Optionen berechnen</button>
         </form>
         <div class="ergebnis" aria-live="polite" id="altErgebnis"></div>
       </section>
     </div>
-    <div class="explanation">Wer sich den Code ansehen möchte, kann das hier tun:
-    <a href="https://github.com/chrismuella/Notenrechner" target="_blank" title="Repository">Repository</a>
-      </div>
+    <div class="footer">
+      <a href="https://github.com/chrismuella/Notenrechner" target="_blank" title="Repository"><img src="assets/github-mark.svg" alt="Github_logo"></a>
+    </div>
   </main>
 
   <script>
@@ -274,6 +331,8 @@
       validateStandard(); validateAlternative();
     })();
   </script>
-  <script defer data-domain="chrismuella.github.io/notenrechner" src="https://plausible.diplomify.de/js/script.js"></script>
+  <script defer data-domain="chrismuella.github.io/notenrechner"
+    src="https://plausible.diplomify.de/js/script.js"></script>
 </body>
+
 </html>
