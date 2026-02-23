@@ -227,14 +227,36 @@
     .modal-formel-math {
       font-weight: bold;
       font-size: 1rem;
-      margin-bottom: 0.5rem;
+      background: #f3f4f6;
+      border-radius: var(--radius);
+      padding: 0.5rem 0.75rem;
+      margin-bottom: 1rem;
     }
 
-    .modal-formel-text {
+    #modalContent p {
       font-size: var(--font-size-sm);
-      color: #555;
-      line-height: 1.5;
-      margin: 0 0 var(--gap);
+      line-height: 1.6;
+      margin: 0 0 0.75rem;
+      color: #444;
+    }
+
+    #modalContent ol {
+      font-size: var(--font-size-sm);
+      line-height: 1.8;
+      margin: 0 0 0.75rem;
+      padding-left: 1.4rem;
+      color: #444;
+    }
+
+    #modalContent .beispiel {
+      background: #f3f4f6;
+      border-left: 3px solid var(--primary-color);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 0.5rem 0.75rem;
+      font-size: var(--font-size-sm);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+      color: #333;
     }
 
     .modal-box button.modal-close {
@@ -289,7 +311,7 @@
 <body>
   <main class="container">
     <h1>Notenrechner</h1>
-    <p style="margin:0 0 0.5rem; font-size: var(--font-size-sm); color: #666;">Sekundarstufe I Niedersachsen</p>
+    <p style="margin:0 0 0.5rem; font-size: var(--font-size-sm); color: #666;">geprüft für Sekundarstufe I Niedersachsen</p>
     <p class="explanation">Wähle unten, ob du mit oder ohne Abschlussnote rechnen möchtest. <br>
       Deine Daten werden nicht gespeichert. Die Formeln zur Berechnung wurden sehr genau geprüft. Aber niemand ist
       perfekt. Ich gebe keine Garantie für die Korrektheit der Ergebnisse!</p>
@@ -423,14 +445,42 @@
 
       const formeln = {
         standard: {
-          titel: 'Formel: Berechnung mit Abschlussarbeit',
-          math: 'Ø = (2 × Vornote + Abschluss) ÷ 3',
-          text: 'Die Vornote zählt doppelt, die Abschlussarbeit einfach. Die Zeugnisnote ist der kaufmännisch gerundete Durchschnitt.'
+          titel: 'Wie wird der Durchschnitt berechnet?',
+          html: `
+            <p class="modal-formel-math">Ø = (2 × Vornote + Abschluss) ÷ 3</p>
+            <p>Deine <strong>Vornote zählt doppelt</strong> – weil sie dein gesamtes Schuljahr zusammenfasst. Die Note der Abschlussarbeit zählt einfach. Zusammen sind das drei Anteile, deshalb wird am Ende durch 3 geteilt.</p>
+            <p><strong>Schritt für Schritt:</strong></p>
+            <ol>
+              <li>Vornote × 2</li>
+              <li>+ Note der Abschlussarbeit</li>
+              <li>÷ 3</li>
+              <li>Ergebnis kaufmännisch runden → das ist deine Zeugnisnote</li>
+            </ol>
+            <div class="beispiel">
+              <strong>Beispiel:</strong> Vornote <strong>3,0</strong>, Abschlussarbeit <strong>2</strong><br>
+              (2 × 3,0 + 2) ÷ 3<br>
+              = (6 + 2) ÷ 3<br>
+              = 8 ÷ 3<br>
+              = <strong>2,67</strong> → Zeugnisnote: <strong>3</strong>
+            </div>
+            <p>Kaufmännisch runden bedeutet: Ab ,50 wird aufgerundet, darunter abgerundet. Also wird aus 2,67 eine 3, und aus 2,49 eine 2.</p>
+          `
         },
         alt: {
-          titel: 'Formel: Benötigte Abschlussnote',
-          math: 'Abschluss ∈ [3×(Ziel − 0,5) − 2×Vornote, 3×(Ziel + 0,5) − 2×Vornote)',
-          text: 'Zeigt, welche ganzzahligen Abschlussnoten nach der Durchschnittsformel zum jeweiligen Zeugnisnoten-Ziel führen.'
+          titel: 'Welche Abschlussnote brauche ich?',
+          html: `
+            <p>Das Tool dreht die Frage um: Statt den Durchschnitt auszurechnen, fragt es – <em>welche Note in der Abschlussarbeit führt zu welcher Zeugnisnote?</em></p>
+            <p><strong>Wichtig zu verstehen:</strong> Die Zeugnisnote ist immer eine ganze Zahl (1, 2, 3 …). Sie entsteht durch Runden. Zeugnisnote <strong>3</strong> bedeutet, dein Durchschnitt liegt irgendwo zwischen <strong>2,50 und 3,49</strong>. Das Tool prüft für jede Zielnote, welche Abschlussnoten diesen Bereich treffen.</p>
+            <div class="beispiel">
+              <strong>Beispiel:</strong> Vornote <strong>3,0</strong>, Zielnote <strong>3</strong><br><br>
+              Für Zeugnisnote 3 muss der Durchschnitt zwischen 2,50 und 3,49 liegen.<br><br>
+              Formel rückwärts angewendet:<br>
+              Abschluss muss zwischen 1,50 und 4,47 liegen.<br><br>
+              Ganze Noten in diesem Bereich: <strong>2, 3 oder 4</strong><br>
+              → Mit einer 2, 3 oder 4 in der Abschlussarbeit erreichst du Zeugnisnote 3.
+            </div>
+            <p>Wenn kein Notenbereich (1–6) passt, zeigt das Tool <em>„nicht möglich"</em> – zum Beispiel, wenn die Vornote schon so gut oder so schlecht ist, dass eine bestimmte Zeugnisnote rechnerisch nicht mehr erreichbar ist.</p>
+          `
         }
       };
 
@@ -442,7 +492,7 @@
       const openModal = (key) => {
         const f = formeln[key];
         modalTitle.textContent = f.titel;
-        modalContent.innerHTML = `<p class="modal-formel-math">${f.math}</p><p class="modal-formel-text">${f.text}</p>`;
+        modalContent.innerHTML = f.html;
         modal.hidden = false;
         modalClose.focus();
       };
